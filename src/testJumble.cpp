@@ -17,7 +17,7 @@ using namespace std;
 
 // Displays the puzzle to the screen.
 // Row and column numbers are added to the display.
-void showJumble(const charArrayPtr* jumble, const int size) {
+void showJumble(char** jumble, const int size) {
 	int i, j;
 	cout << "\n  ";
 	for (i = 0; i < size; i++)
@@ -92,13 +92,16 @@ void testJumble() {
 	cout << "Testing copy constructor:" << endl;
 	// While debugging, you can use capital letters to make the hidden string easier to locate
 	JumblePuzzle jp1("HELLO", "easy");
+	//why this no work
 	showJumble(jp1.getJumble(), jp1.getSize());
+
 	JumblePuzzle jp2(jp1);
+
 	cout << "Should look the same:" << endl;
 	showJumble(jp2.getJumble(), jp2.getSize());
 
 	// Test aliasing from copy constructor
-	charArrayPtr* puzzle = jp2.getJumble();
+	char** puzzle = jp2.getJumble();
 	int sz = jp2.getSize();
 	for (int i = 0; i < sz; i++)
 		puzzle[i][i] = '.';
@@ -149,8 +152,30 @@ void testJumble() {
 	// and the program will terminate normally!
 	int loopLimit = 1000;
 	for (int i = 0; i < loopLimit; i++)
-		JumblePuzzle jp("HIDDENWORD", "hard");
+	JumblePuzzle jp("HIDDENWORD", "hard");
 	cout << "\nPassed memory leak test!" << endl;
+
+	//test Jumble exceptions
+	//test for invalid difficulty
+	cout <<"Should Print: \"Invalid difficulty\""<<endl;
+	try{
+		JumblePuzzle jp5("hello","no");
+	}catch(BadJumbleException& e){
+		cerr<<e.what()<<endl;
+	}
+	//test for incorrectly entered hidden word
+	cout <<"Should Print: \"Invalid hidden word, the length must be greater than 0 and less than 20\""<<endl;
+	try{
+		JumblePuzzle jp6("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww","easy");
+	}catch(BadJumbleException& e){
+		cerr<<e.what()<<endl;
+	}
+	//test accessors
+	JumblePuzzle jp7("nice","medium");
+	showJumble(jp7.getJumble(), jp7.getSize());
+	cout<<"The puzzle should be of size "<<jp7.getSize()<<endl;
+	cout << "The hidden word should be \""<<jp7.getHidden()<<"\""<<endl;
+	cout<<"The hidden word should be found in row: "<<jp7.getRowPos()<< " col: "<<jp7.getColPos()<<endl;
 
 } // end testJumble
 
